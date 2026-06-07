@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SoundCloud & Spotify Downloader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <canvas id="matrixCanvas" class="background-canvas"></canvas>
+    <main class="container glass-panel">
+      <header>
+        <div class="header-content">
+          <div class="logo">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L12 22M2 12H22" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="paint0_linear" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#FF5500"/>
+                  <stop offset="1" stop-color="#FF0055"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <h1>SoundCloud & Spotify<br><span>Downloader</span></h1>
+          </div>
+          <button id="infoBtn" class="icon-btn" title="App Info">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="input-section">
+        <div class="input-wrapper">
+          <input type="text" id="urlInput" placeholder="Paste SoundCloud or Spotify link here..." autocomplete="off">
+          <button id="fetchBtn" class="btn-primary">
+            <span>Analyze</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+        <p class="error-msg" id="errorMsg"></p>
+      </section>
+
+      <section class="preview-section hidden" id="previewSection">
+        <div class="track-card">
+          <div class="artwork-container">
+            <img src="" id="artwork" alt="Track Cover" />
+            <div class="play-overlay">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+          <div class="track-info">
+            <p class="uploader" id="uploaderName">Artist Name</p>
+            <h2 class="title" id="trackTitle">Track Title</h2>
+            <div class="meta-badges">
+              <span class="badge" id="typeBadge">Single</span>
+              <span class="badge" id="durationBadge">0:00</span>
+            </div>
+          </div>
+        </div>
+
+        <button id="downloadBtn" class="btn-primary btn-large">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Download Now</span>
+        </button>
+
+        <div class="progress-container hidden" id="progressContainer">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+            <p class="progress-text" id="progressText" style="margin: 0;">Starting download...</p>
+            <button id="cancelBtn" class="btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background-color: var(--error);">Cancel</button>
+          </div>
+          <p class="stats-text hidden" id="statsText"></p>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal-overlay hidden" id="infoModal">
+      <div class="modal-content glass-panel">
+        <div class="modal-header">
+          <h2>App Info & Guidelines</h2>
+          <button id="closeModalBtn" class="icon-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h3>What you can download:</h3>
+          <ul>
+            <li>Public tracks, albums, playlists, and artist profiles on SoundCloud</li>
+            <li>Any standard Spotify song, album, playlist, or artist profile</li>
+          </ul>
+          <h3>What will fail:</h3>
+          <ul>
+            <li>Private or deleted tracks</li>
+            <li>SoundCloud Go+ exclusive tracks</li>
+            <li>Region-blocked content</li>
+          </ul>
+          <p><em>Note: If you download a playlist containing private tracks, the app will simply skip them and download the rest!</em></p>
+        </div>
+      </div>
+    </div>
+    
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
