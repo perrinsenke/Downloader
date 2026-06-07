@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python binaries globally
-RUN pip3 install --no-cache-dir yt-dlp spotdl
+RUN pip3 install --no-cache-dir yt-dlp spotdl --break-system-packages
 
 WORKDIR /app
 
