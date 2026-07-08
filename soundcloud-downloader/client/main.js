@@ -23,6 +23,11 @@ const infoBtn = document.getElementById('infoBtn');
 const infoModal = document.getElementById('infoModal');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
+// Track List Elements
+const trackList = document.getElementById('trackList');
+const trackCount = document.getElementById('trackCount');
+const trackListBody = document.getElementById('trackListBody');
+
 let currentUrl = '';
 let activeJobId = null;
 
@@ -65,6 +70,7 @@ async function fetchInfo() {
   previewSection.classList.add('hidden');
   progressContainer.classList.add('hidden');
   statsText.classList.add('hidden');
+  trackList.classList.add('hidden');
   downloadBtn.classList.remove('hidden');
   activeJobId = null;
 
@@ -87,12 +93,39 @@ async function fetchInfo() {
     artwork.src = imgUrl;
 
     if (data.isPlaylist) {
-      typeBadge.textContent = data.entries === 'Multiple' ? data.badgeStr : `Collection (${data.entries} tracks)`;
+      typeBadge.textContent = typeof data.entries === 'number' ? `Collection (${data.entries} tracks)` : data.badgeStr;
       durationBadge.classList.add('hidden');
     } else {
-      typeBadge.textContent = data.uploader === 'Spotify' ? data.badgeStr : 'Single Track';
-      durationBadge.classList.remove('hidden');
-      durationBadge.textContent = formatTime(data.duration);
+      typeBadge.textContent = data.badgeStr || 'Single Track';
+      if (data.duration) {
+        durationBadge.classList.remove('hidden');
+        durationBadge.textContent = formatTime(data.duration);
+      } else {
+        durationBadge.classList.add('hidden');
+      }
+    }
+
+    // Render track list if available (Spotify playlists/albums)
+    if (data.tracks && data.tracks.length > 1) {
+      const MAX_DISPLAY = 50;
+      const displayTracks = data.tracks.slice(0, MAX_DISPLAY);
+      trackCount.textContent = `${data.tracks.length} tracks`;
+      trackListBody.innerHTML = displayTracks.map((t, i) => `
+        <div class="track-row">
+          <span class="track-number">${i + 1}</span>
+          <div class="track-row-info">
+            <span class="track-row-name">${t.name}</span>
+            <span class="track-row-artist">${t.artist}</span>
+          </div>
+          <span class="track-row-duration">${formatTime(t.duration)}</span>
+        </div>
+      `).join('');
+      if (data.tracks.length > MAX_DISPLAY) {
+        trackListBody.innerHTML += `<div class="track-row track-row-more">and ${data.tracks.length - MAX_DISPLAY} more...</div>`;
+      }
+      trackList.classList.remove('hidden');
+    } else {
+      trackList.classList.add('hidden');
     }
 
     previewSection.classList.remove('hidden');
@@ -149,10 +182,7 @@ async function startDownload() {
               if(data.message.includes('Destination')) {
                 progressText.textContent = 'Converting to MP3...';
               } else if (data.message.match(/Downloaded|Searching|Found/i)) {
-                progressText.textContent = data.message;
-                if (!progressBar.style.width || progressBar.style.width === '0%') {
-                  progressBar.style.width = '50%'; // fake progress for spotdl since it doesn't emit pure % reliably
-                }
+                progressText.textContent = data.message.length > 80 ? data.message.substring(0, 77) + '...' : data.message;
               }
             } else if (data.type === 'error') {
                progressText.textContent = data.message;
